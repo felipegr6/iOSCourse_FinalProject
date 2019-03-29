@@ -11,7 +11,7 @@ import Alamofire
 
 enum API {
     case getTeams
-    case getPlayersBy(teamId : Int)
+    case getPlayersBy(teamId : String)
     case openPackage
 }
 
@@ -31,7 +31,7 @@ extension API {
         case .getPlayersBy(let teamId):
             var json = ""
             do {
-                let data: PlayerRequest = PlayerRequest(team: TeamData(teamId: String(teamId)))
+                let data: PlayerRequest = PlayerRequest(team: TeamData(teamId: teamId))
                 json = try String(data: JSONEncoder().encode(data), encoding: .utf8) ?? ""
             } catch {
                 print(error)
@@ -42,7 +42,7 @@ extension API {
         }
     }
     
-    var url : String { return API.Constants.baseURL + path }
+    var url : String { return (API.Constants.baseURL + path).addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "" }
     
     var httpMethod : HTTPMethod {
         switch self {
@@ -65,7 +65,8 @@ extension API {
         )
         
         request.validate().responseData { response in
-            print("Status code: \(response.response?.statusCode ?? 0)")
+            debugPrint(response.request?.url?.absoluteString)
+            debugPrint("Status code: \(response.response?.statusCode ?? 0)")
             DispatchQueue.main.async {
                 switch response.result {
                 case .success:

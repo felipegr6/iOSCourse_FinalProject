@@ -13,10 +13,19 @@ struct TeamVO : Codable {
 }
 
 struct Team : Codable {
+    let id : String?
     let code : String?
     let color : String?
     let name : String?
     let flag : Flag?
+    
+    enum CodingKeys : String, CodingKey {
+        case id = "objectId"
+        case code
+        case color
+        case name
+        case flag
+    }
 }
 
 struct Flag : Codable {

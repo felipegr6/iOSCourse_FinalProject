@@ -22,6 +22,8 @@ class HomeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.title = "WORLD CUP 2018 Cards"
+        
         countryTableView.register(UINib(nibName: HomeTableViewCell.TAG, bundle: nil), forCellReuseIdentifier: "homeCell")
         countryTableView.delegate = self
         countryTableView.dataSource = self
@@ -29,6 +31,15 @@ class HomeViewController: UIViewController {
         RestFacade.getTeams { [weak self] (teams, error) in
             self?.teams = teams
             self?.countryTableView.reloadData()
+        }
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        guard let identifier = segue.identifier else { return }
+        
+        if identifier == "teamSegue" {
+            let teamVC = segue.destination as? TeamViewController
+            teamVC?.team = sender as? Team
         }
     }
 }
@@ -39,7 +50,6 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
         let cell = countryTableView.dequeueReusableCell(withIdentifier: "homeCell") as! HomeTableViewCell
         let team = teams[indexPath.row]
         
@@ -50,5 +60,9 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         cell.lblNameTeam.text = team.name
         
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        performSegue(withIdentifier: "teamSegue", sender: teams[indexPath.row])
     }
 }
